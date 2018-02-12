@@ -21,6 +21,7 @@ import com.insight.donation_analytics.Bank.{Account, emptyAccount}
 import org.slf4j.{Logger, LoggerFactory}
 
 trait Bank {
+  def size: (Int, Int)
   def update(transaction: Transaction): Unit
   def lookup(recipient: String,
              zipCode: Int,
@@ -28,10 +29,15 @@ trait Bank {
              percent: Double): String
 }
 
-final case class InMemoryBank(data: mutable.OpenHashMap[String, Account]) extends Bank {
+final case class InMemoryBank(data: mutable.HashMap[String, Account]) extends Bank {
 
   def apply(key: String): Account = {
     data.getOrElse(key, emptyAccount)
+  }
+
+  def size: (Int, Int) = {
+    val donations = data.values.map(a => a.records.count).sum
+    (data.size, donations)
   }
 
   def update(transaction: Transaction): Unit = {
@@ -65,6 +71,6 @@ object Bank {
 
   val emptyAccount: Account = Account(0L, Leaf)
 
-  def apply(): Bank = InMemoryBank(mutable.OpenHashMap[String, Account]())
+  def apply(): Bank = InMemoryBank(mutable.HashMap[String, Account]())
 
 }

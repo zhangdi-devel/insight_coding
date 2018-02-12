@@ -18,10 +18,11 @@ package com.insight.donation_analytics
 
 import java.io.{File, FileWriter}
 import java.nio.file._
+import java.nio.charset.CodingErrorAction
 
 import org.slf4j.{Logger, LoggerFactory}
 
-import scala.io.Source
+import scala.io.{Source, Codec}
 
 object DonationAnalytics {
 
@@ -41,7 +42,14 @@ object DonationAnalytics {
 
     logger.info(s"process the input with ${f"$percent%.2f"}")
 
-    val transactionStream = Source.fromFile(transactionFile).getLines()
+    /**
+      * By default jvm will throw error when encountering other charset
+      * change it to replace
+      * */
+    val codec = Codec("UTF-8")
+    codec.onMalformedInput(CodingErrorAction.REPLACE)
+    codec.onUnmappableCharacter(CodingErrorAction.REPLACE)
+    val transactionStream = Source.fromFile(transactionFile)(codec).getLines()
 
     val donorRepository = DonorRepository()
 
@@ -51,6 +59,8 @@ object DonationAnalytics {
 
     write(outputFile, outputStream)
 
+    logger.info(s"total number of donors: ${donorRepository.size}")
+    logger.info(s"total number of accounts and donations:  ${bank.size}")
   }
 
 
@@ -63,7 +73,7 @@ object DonationAnalytics {
 
     input.flatMap{line =>
       i += 1
-      if (i%400000 == 0) {
+      if (i%500000 == 0) {
         logger.debug(s"$i records processed")
       }
       Transaction(line) match {

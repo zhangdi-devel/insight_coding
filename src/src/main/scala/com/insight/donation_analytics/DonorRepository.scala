@@ -20,10 +20,14 @@ import scala.collection.mutable
 
 trait DonorRepository {
   def update(transaction: Transaction): Boolean
+  def size: Int
 }
 
-final case class InMemoryDonorRepository(data: mutable.OpenHashMap[String, Short])
+final case class InMemoryDonorRepository(data: mutable.HashMap[String, Short])
   extends DonorRepository {
+
+  def size = data.size
+
   def update(transaction: Transaction): Boolean = {
     /**
       * this method takes a transaction
@@ -56,7 +60,7 @@ final case class InMemoryDonorRepository(data: mutable.OpenHashMap[String, Short
 object DonorRepository {
 
   def apply(): DonorRepository = {
-    InMemoryDonorRepository(mutable.OpenHashMap[String, Short]())
+    InMemoryDonorRepository(mutable.HashMap[String, Short]())
   }
 
 }
