@@ -5,7 +5,7 @@
 3. [Approach](approach)
 4. [Performance and scalability](performance-and-scalability)
 
-## 1. Dependencies
+# 1. Dependencies
 
  `scala` is used for this project. 
 
@@ -16,11 +16,11 @@
   - `scalatest` is used for unit testing.
   -  `slf4j` and `log4j` backend are used for logging. 
 
-## 2. Run instructions
+# 2. Run instructions
 
 The script `run.sh` will first try to compile the project and make an assembly jar file with dependencies using `sbt`, and then run the jar file using `java`. In case the compiling is not successful, it will fall back to use the jar file that was pre-compiled.
 
-## 3. Approach
+# 3. Approach
 
 The input are read and processed line by line. Two open addressing (closed hashing) hash tables are maintained during the processing. One (`DonorRepository`) stores the earliest year of donation for each donor. The other (`Bank`) stores the donations (`Account`) from repeated donors for each recipient in each zipcode and year. Importantly, the donations of one `Account` are stored in a black-red tree with an augmented count field which stores the size of the subtree. With this balanced binary search tree, it takes $O(log(n))$ time for both insertion and looking-up for the $k_{th}$ element. The source code is explained in detail below.
 
@@ -36,7 +36,7 @@ The input are read and processed line by line. Two open addressing (closed hashi
 - `Bank` is the class to hold the accounts for each recipient in each area (zipcode) and year. The key of the hash table is `s"$recipient|$zipcode|$year"`, the value is an `Account` which consists of a total amount and an `OrderStatisticTree`. The `update` method takes an transaction and update the account for the key by adjusting the total amount and inserting the new amount to the `OrderStatisticTree`. The `lookup` method takes the information for the key and a percent number (between 0 and 1). The percent will be convert to $k=size * percent$ and then the $k_{th}$smallest element in the tree will be returned.
 - `OrderStatisticTree` is the class to hold the donations for each `Account` in the `Bank`. It is a red-black tree augmented with a count field that stores the size of the subtree, so that the time of the query for the $k_{th}$ element becomes $O(log(n))$.
 
-## 4. Performance and scalability
+# 4. Performance and scalability
 
 **Space complexity**
 
