@@ -46,7 +46,7 @@ final case class InMemoryBank(data: mutable.HashMap[String, Account]) extends Ba
       case Transaction.Valid(r, _, z, y, a) =>
         val key = s"$r|$z|$y"
         val acc = apply(key)
-        data(key) = Account(acc.total + a, RedBlackTree.insert(acc.records, a))
+        data(key) = Account(acc.total + a, OrderStatisticTree.insert(acc.records, a))
     }
   }
 
@@ -57,7 +57,7 @@ final case class InMemoryBank(data: mutable.HashMap[String, Account]) extends Ba
     val key = s"$recipient|$zipCode|$year"
     val acc = apply(key)
     val k = (percent * acc.records.count).ceil.toInt - 1
-    val quantile = RedBlackTree.lookup(acc.records, k)
+    val quantile = OrderStatisticTree.lookup(acc.records, k)
     f"$recipient%s|$zipCode%05d|$year%04d|$quantile%d|${acc.total}%d|${acc.records.count}%d"
   }
 
@@ -67,7 +67,7 @@ object Bank {
 
   val logger: Logger = LoggerFactory.getLogger(getClass)
 
-  final case class Account(total: Long, records: RedBlackTree)
+  final case class Account(total: Long, records: OrderStatisticTree)
 
   val emptyAccount: Account = Account(0L, Leaf)
 

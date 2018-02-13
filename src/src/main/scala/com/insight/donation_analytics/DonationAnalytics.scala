@@ -30,7 +30,12 @@ object DonationAnalytics {
 
   def main(args: Array[String]): Unit = {
 
-    if (args.length != 0) {
+    var debug = false
+
+    if (args.length == 1 && args(0) == "debug") {
+      logger.warn(s"debug mode. will generate more stats")
+      debug = true
+    } else if (args.length != 0) {
       logger.warn(s"this program ignores any command line arguments")
     }
 
@@ -40,7 +45,7 @@ object DonationAnalytics {
 
     val percent: Double = Source.fromFile(percentFile).getLines().next().toDouble/100
 
-    logger.info(s"process the input with ${f"$percent%.2f"}")
+    logger.info(s"process the records with ${f"$percent%.2f"}")
 
     /**
       * By default jvm will throw error when encountering other charset
@@ -58,11 +63,28 @@ object DonationAnalytics {
     val outputStream = process(percent, transactionStream, donorRepository, bank)
 
     write(outputFile, outputStream)
-
     logger.info(s"total number of donors: ${donorRepository.size}")
-    logger.info(s"total number of accounts and donations:  ${bank.size}")
+    logger.info(s"total number of accounts and donations: ${bank.size}")
+
+    if (debug) {
+      logger.info(s"generating account information to account.txt")
+      statement(bank)
+    }
+
   }
 
+
+  def statement(bank: Bank): Unit = {
+    val writer = new FileWriter(Paths.get("account.txt").toFile)
+
+    bank match {
+      case InMemoryBank(data) => data.foreach{
+        case (k, acc) => writer.write(s"$k|${acc.total}|${acc.records.count}\n")
+      }
+    }
+
+    writer.close()
+  }
 
   def process(percent: Double,
               input: Iterator[String],

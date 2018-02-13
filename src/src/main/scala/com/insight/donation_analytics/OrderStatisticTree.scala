@@ -16,7 +16,7 @@
 
 package com.insight.donation_analytics
 
-import RedBlackTree._
+import OrderStatisticTree._
 
 import scala.annotation.tailrec
 
@@ -28,12 +28,12 @@ import scala.annotation.tailrec
   *
   * */
 
-sealed trait RedBlackTree {
+sealed trait OrderStatisticTree {
   def color: Color
   def count: Int
 }
 
-case object Leaf extends RedBlackTree {
+case object Leaf extends OrderStatisticTree {
   def color: Color = B
   def count = 0
 }
@@ -41,10 +41,10 @@ case object Leaf extends RedBlackTree {
 case class Node(data: Long,
                 color: Color,
                 count: Int,
-                left: RedBlackTree,
-                right: RedBlackTree) extends RedBlackTree
+                left: OrderStatisticTree,
+                right: OrderStatisticTree) extends OrderStatisticTree
 
-object RedBlackTree {
+object OrderStatisticTree {
 
   sealed trait Color
   /** Black */
@@ -53,7 +53,7 @@ object RedBlackTree {
   final case object R extends Color //Red
 
   /** change color to black */
-  def blacken(rbt: RedBlackTree): RedBlackTree = {
+  def blacken(rbt: OrderStatisticTree): OrderStatisticTree = {
     rbt match {
       case Leaf|Node(_, B,_,_,_) => rbt
       case Node(x, R, c, l, r) => Node(x, B, c, l, r)
@@ -81,7 +81,7 @@ object RedBlackTree {
     *     b   c                                           b   c
     *
     * */
-  def balance(rbt: RedBlackTree): RedBlackTree = {
+  def balance(rbt: OrderStatisticTree): OrderStatisticTree = {
     rbt match {
       case Node(z, B, cnt3, Node(y, R, _, Node(x, R, cnt1, a, b), c), d) =>
         Node(y, R, cnt3, Node(x, B, cnt1, a, b), Node(z, B, 1 + c.count + d.count, c, d ))
@@ -96,8 +96,8 @@ object RedBlackTree {
   }
 
   /** insert new element */
-  def insert(rbt: RedBlackTree, x: Long): RedBlackTree = {
-    def helper(_rbt: RedBlackTree, _x: Long): RedBlackTree = {
+  def insert(rbt: OrderStatisticTree, x: Long): OrderStatisticTree = {
+    def helper(_rbt: OrderStatisticTree, _x: Long): OrderStatisticTree = {
       _rbt match {
         case Leaf => Node(_x, R, 1, Leaf, Leaf)
         case Node(y, c, cnt, l, r) =>
@@ -113,7 +113,7 @@ object RedBlackTree {
 
   /** find Kth smallest */
   @tailrec
-  def lookup(rbt: RedBlackTree, k: Int): Long = {
+  def lookup(rbt: OrderStatisticTree, k: Int): Long = {
     rbt match {
       case Leaf => -1 //This should never happen
       case Node(x, _, _, l, r) =>
@@ -127,9 +127,9 @@ object RedBlackTree {
     }
   }
 
-  def apply(elems: Long*): RedBlackTree = {
+  def apply(elems: Long*): OrderStatisticTree = {
     @tailrec
-    def helper(rbt: RedBlackTree, rest: Iterator[Long]): RedBlackTree = {
+    def helper(rbt: OrderStatisticTree, rest: Iterator[Long]): OrderStatisticTree = {
       if (rest.hasNext) {
         helper(insert(rbt, rest.next()), rest)
       } else {

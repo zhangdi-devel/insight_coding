@@ -41,7 +41,7 @@ object Transaction {
       Invalid
     } else {
       val idR = """(\w+)""".r
-      val nameR = """([A-Za-z]+,[\sa-zA-Z\.]+)""".r
+      val nameR = """([A-Za-z][a-zA-Z\-\.'\s]*,[\sa-zA-Z\.'\-,]*)""".r
       val zipCodeR = """(\d{5})\d*""".r
       val dateR = """\d{4}(\d{4})""".r
       val amtR = """(\d{1,12}\.?\d{0,2})""".r
