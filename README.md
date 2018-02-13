@@ -1,6 +1,9 @@
-# Coding challenge for Insight data engineering workshop
+# Table of Contents
 
-
+1. [Dependencies](README.md#dependencies)
+2. [Run instructions](README.md#run-instructions)
+3. [Approach](approach)
+4. [Performance and scalability](performance-and-scalability)
 
 ## 1. Dependencies
 
