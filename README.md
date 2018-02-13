@@ -2,8 +2,8 @@
 
 1. [Dependencies](README.md#dependencies)
 2. [Run instructions](README.md#run-instructions)
-3. [Approach](approach)
-4. [Performance and scalability](performance-and-scalability)
+3. [Approach](README.md#approach)
+4. [Performance and scalability](README.md#performance-and-scalability)
 
 # Dependencies
 
